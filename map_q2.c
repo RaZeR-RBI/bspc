@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "aas_store.h"		//AAS_MAX_BBOXES
 #include "aas_cfg.h"
 #include "aas_map.h"			//AAS_CreateMapBrushes
+#include "aas_flags.h"
 #include "l_bsp_q2.h"
 
 
@@ -82,13 +83,14 @@ int	Q2_BrushContents (mapbrush_t *b)
 	int			trans;
 
 	s = &b->original_sides[0];
-	contents = s->contents;
+	// erase any incompatible flags
+	contents = s->contents & AAS_MASK_Q2;
 	trans = texinfo[s->texinfo].flags;
 	for (i = 1; i < b->numsides; i++, s++)
 	{
 		s = &b->original_sides[i];
 		trans |= texinfo[s->texinfo].flags;
-		if (s->contents != contents)
+		if ((s->contents & AAS_MASK_Q2) != contents)
 		{
 			Log_Print("Entity %i, Brush %i: mixed face contents\n"
 				, b->entitynum, b->brushnum);
@@ -97,11 +99,9 @@ int	Q2_BrushContents (mapbrush_t *b)
 		}
 	}
 
-	// if any side is translucent, mark the contents
-	// and change solid to window
+	// if any side is translucent, change solid to window
 	if ( trans & (SURF_TRANS33|SURF_TRANS66) )
 	{
-		contents |= CONTENTS_Q2TRANSLUCENT;
 		if (contents & CONTENTS_SOLID)
 		{
 			contents &= ~CONTENTS_SOLID;
@@ -109,6 +109,11 @@ int	Q2_BrushContents (mapbrush_t *b)
 		}
 	}
 
+	// use aux as botclip (since it's unused by original engine)
+	if (s->contents & CONTENTS_AUX)
+	{
+		contents = (AAS_CONTENTS_BOTCLIP | AAS_CONTENTS_SOLID);
+	}
 	return contents;
 }
 
@@ -877,7 +882,7 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 
 	// get the content for the entire brush
 	b->contents = bspbrush->contents;
-	Q2_BrushContents(b);
+	b->contents = Q2_BrushContents(b);
 
 	if (BrushExists(b))
 	{

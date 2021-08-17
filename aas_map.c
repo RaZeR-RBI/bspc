@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/aasfile.h"		//aas_bbox_t
 #include "aas_store.h"				//AAS_MAX_BBOXES
 #include "aas_cfg.h"
-#include "qcommon/surfaceflags.h"
+#include "aas_flags.h"
 
 #define SPAWNFLAG_NOT_EASY			0x00000100
 #define SPAWNFLAG_NOT_MEDIUM		0x00000200
@@ -157,17 +157,17 @@ void AAS_SetTexinfo(mapbrush_t *brush)
 	int n;
 	side_t *side;
 
-	if (brush->contents & (CONTENTS_LADDER
-									| CONTENTS_AREAPORTAL
-									| CONTENTS_CLUSTERPORTAL
-									| CONTENTS_TELEPORTER
-									| CONTENTS_JUMPPAD
-									| CONTENTS_DONOTENTER
-									| CONTENTS_WATER
-									| CONTENTS_LAVA
-									| CONTENTS_SLIME
-									| CONTENTS_WINDOW
-									| CONTENTS_PLAYERCLIP))
+	if (brush->contents & (AAS_CONTENTS_LADDER
+									| AAS_CONTENTS_AREAPORTAL
+									| AAS_CONTENTS_CLUSTERPORTAL
+									| AAS_CONTENTS_TELEPORTER
+									| AAS_CONTENTS_JUMPPAD
+									| AAS_CONTENTS_DONOTENTER
+									| AAS_CONTENTS_WATER
+									| AAS_CONTENTS_LAVA
+									| AAS_CONTENTS_SLIME
+									| AAS_CONTENTS_WINDOW
+									| AAS_CONTENTS_PLAYERCLIP))
 	{
 		//we just set texinfo to 0 because these brush sides MUST be used as
 		//bsp splitters textured or not textured
@@ -671,41 +671,41 @@ void AAS_PositionBrush(entity_t *mapent, mapbrush_t *brush)
 		{
 			notteam = FloatForKey(mapent, "bot_notteam");
 			if ( notteam == 1 ) {
-				brush->contents |= CONTENTS_NOTTEAM1;
+				brush->contents |= AAS_CONTENTS_NOTTEAM1;
 			}
 			else if ( notteam == 2 ) {
-				brush->contents |= CONTENTS_NOTTEAM2;
+				brush->contents |= AAS_CONTENTS_NOTTEAM2;
 			}
 			else {
 				// always avoid so set lava contents
-				brush->contents |= CONTENTS_LAVA;
+				brush->contents |= AAS_CONTENTS_LAVA;
 			}
 		} //end if
 		//
 		else if (!strcmp("trigger_push", ValueForKey(mapent, "classname")))
 		{
 			//set the jumppad contents
-			brush->contents = CONTENTS_JUMPPAD;
+			brush->contents = AAS_CONTENTS_JUMPPAD;
 			//Log_Print("found trigger_push brush\n");
 		} //end if
 		//
 		else if (!strcmp("trigger_multiple", ValueForKey(mapent, "classname")))
 		{
 			//set teleporter contents
-			brush->contents = CONTENTS_TELEPORTER;
+			brush->contents = AAS_CONTENTS_TELEPORTER;
 			//Log_Print("found trigger_multiple teleporter brush\n");
 		} //end if
 		//
 		else if (!strcmp("trigger_teleport", ValueForKey(mapent, "classname")))
 		{
 			//set teleporter contents
-			brush->contents = CONTENTS_TELEPORTER;
+			brush->contents = AAS_CONTENTS_TELEPORTER;
 			//Log_Print("found trigger_teleport teleporter brush\n");
 		} //end if
 		else if (!strcmp("func_door", ValueForKey(mapent, "classname")))
 		{
 			//set mover contents
-			brush->contents = CONTENTS_MOVER;
+			brush->contents = AAS_CONTENTS_MOVER;
 			//get the model number
 			model = ValueForKey(mapent, "model");
 			brush->modelnum = atoi(model+1);
@@ -739,25 +739,25 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 	AAS_SetTexinfo(brush);
 	//remove contents detail flag, otherwise player clip contents won't be
 	//bsped correctly for AAS!
-	brush->contents &= ~CONTENTS_DETAIL;
+	brush->contents &= ~AAS_CONTENTS_DETAIL;
 	//if the brush has contents area portal it should be the only contents
-	if (brush->contents & (CONTENTS_AREAPORTAL|CONTENTS_CLUSTERPORTAL))
+	if (brush->contents & (AAS_CONTENTS_AREAPORTAL|AAS_CONTENTS_CLUSTERPORTAL))
 	{
-		brush->contents = CONTENTS_CLUSTERPORTAL;
+		brush->contents = AAS_CONTENTS_CLUSTERPORTAL;
 		brush->leafnum = -1;
 	} //end if
 	//window and playerclip are used for player clipping, make them solid
-	if (brush->contents & (CONTENTS_WINDOW | CONTENTS_PLAYERCLIP))
+	if (brush->contents & (AAS_CONTENTS_WINDOW | AAS_CONTENTS_PLAYERCLIP))
 	{
 		//
-		brush->contents &= ~(CONTENTS_WINDOW | CONTENTS_PLAYERCLIP);
-		brush->contents |= CONTENTS_SOLID;
+		brush->contents &= ~(AAS_CONTENTS_WINDOW | AAS_CONTENTS_PLAYERCLIP);
+		brush->contents |= AAS_CONTENTS_SOLID;
 		brush->leafnum = -1;
 	} //end if
 	//
-	if (brush->contents & CONTENTS_BOTCLIP)
+	if (brush->contents & AAS_CONTENTS_BOTCLIP)
 	{
-		brush->contents = CONTENTS_SOLID;
+		brush->contents = AAS_CONTENTS_SOLID;
 		brush->leafnum = -1;
 	} //end if
 	//
@@ -765,16 +765,16 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 	//PrintContents(brush->contents);
 	//Log_Write("\r\n");
 	//if not one of the following brushes then the brush is NOT used for AAS
-	if (!(brush->contents & (CONTENTS_SOLID
-									| CONTENTS_LADDER
-									| CONTENTS_CLUSTERPORTAL
-									| CONTENTS_DONOTENTER
-									| CONTENTS_TELEPORTER
-									| CONTENTS_JUMPPAD
-									| CONTENTS_WATER
-									| CONTENTS_LAVA
-									| CONTENTS_SLIME
-									| CONTENTS_MOVER
+	if (!(brush->contents & (AAS_CONTENTS_SOLID
+									| AAS_CONTENTS_LADDER
+									| AAS_CONTENTS_CLUSTERPORTAL
+									| AAS_CONTENTS_DONOTENTER
+									| AAS_CONTENTS_TELEPORTER
+									| AAS_CONTENTS_JUMPPAD
+									| AAS_CONTENTS_WATER
+									| AAS_CONTENTS_LAVA
+									| AAS_CONTENTS_SLIME
+									| AAS_CONTENTS_MOVER
 									)))
 	{
 		nummapbrushsides -= brush->numsides;
@@ -802,13 +802,13 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 	nummapbrushes++;
 	mapent->numbrushes++;
 	//liquid brushes are expanded for the maximum possible bounding box
-	if (brush->contents & (CONTENTS_WATER
-									| CONTENTS_LAVA
-									| CONTENTS_SLIME 
-									| CONTENTS_TELEPORTER
-									| CONTENTS_JUMPPAD
-									| CONTENTS_DONOTENTER
-									| CONTENTS_MOVER
+	if (brush->contents & (AAS_CONTENTS_WATER
+									| AAS_CONTENTS_LAVA
+									| AAS_CONTENTS_SLIME 
+									| AAS_CONTENTS_TELEPORTER
+									| AAS_CONTENTS_JUMPPAD
+									| AAS_CONTENTS_DONOTENTER
+									| AAS_CONTENTS_MOVER
 									))
 	{
 		brush->expansionbbox = 0;
@@ -818,7 +818,7 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 		AAS_MakeBrushWindings(brush);
 	} //end if
 	//area portal brushes are NOT expanded
-	else if (brush->contents & CONTENTS_CLUSTERPORTAL)
+	else if (brush->contents & AAS_CONTENTS_CLUSTERPORTAL)
 	{
 		brush->expansionbbox = 0;
 		//NOTE: the first bounding box is the max
@@ -827,8 +827,8 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 		AAS_MakeBrushWindings(brush);
 	} //end if
 	//all solid brushes are expanded for all bounding boxes
-	else if (brush->contents & (CONTENTS_SOLID
-										| CONTENTS_LADDER
+	else if (brush->contents & (AAS_CONTENTS_SOLID
+										| AAS_CONTENTS_LADDER
 										))
 	{
 		//brush for the first bounding box

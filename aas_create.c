@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "aas_edgemelting.h"
 #include "aas_prunenodes.h"
 #include "aas_cfg.h"
-#include "qcommon/surfaceflags.h"
+#include "aas_flags.h"
 
 //#define AW_DEBUG
 //#define L_DEBUG
@@ -677,24 +677,24 @@ tmp_node_t *AAS_CreateArea(node_t *node)
 			AAS_CheckFaceWindingPlane(tmpface);
 #endif //L_DEBUG
 			//if there's solid at the other side of the portal
-			if (p->nodes[!pside]->contents & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP))
+			if (p->nodes[!pside]->contents & (AAS_CONTENTS_SOLID | AAS_CONTENTS_PLAYERCLIP))
 			{
 				tmpface->faceflags |= FACE_SOLID;
 			} //end if
 			//else there is no solid at the other side and if there
 			//is a liquid at this side
-			else if (node->contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))
+			else if (node->contents & (AAS_CONTENTS_WATER|AAS_CONTENTS_SLIME|AAS_CONTENTS_LAVA))
 			{
 				tmpface->faceflags |= FACE_LIQUID;
 				//if there's no liquid at the other side
-				if (!(p->nodes[!pside]->contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)))
+				if (!(p->nodes[!pside]->contents & (AAS_CONTENTS_WATER|AAS_CONTENTS_SLIME|AAS_CONTENTS_LAVA)))
 				{
 					tmpface->faceflags |= FACE_LIQUIDSURFACE;
 				} //end if
 			} //end else
 			//if there's ladder contents at other side of the portal
-			if ((p->nodes[pside]->contents & CONTENTS_LADDER) ||
-					(p->nodes[!pside]->contents & CONTENTS_LADDER))
+			if ((p->nodes[pside]->contents & AAS_CONTENTS_LADDER) ||
+					(p->nodes[!pside]->contents & AAS_CONTENTS_LADDER))
 			{
 
 				//NOTE: doesn't have to be solid at the other side because
@@ -724,16 +724,16 @@ tmp_node_t *AAS_CreateArea(node_t *node)
 	tmparea->presencetype = ~node->expansionbboxes & cfg.allpresencetypes;
 	//
 	tmparea->contents = 0;
-	if (node->contents & CONTENTS_CLUSTERPORTAL) tmparea->contents |= AREACONTENTS_CLUSTERPORTAL;
-	if (node->contents & CONTENTS_MOVER) tmparea->contents |= AREACONTENTS_MOVER;
-	if (node->contents & CONTENTS_TELEPORTER) tmparea->contents |= AREACONTENTS_TELEPORTER;
-	if (node->contents & CONTENTS_JUMPPAD) tmparea->contents |= AREACONTENTS_JUMPPAD;
-	if (node->contents & CONTENTS_DONOTENTER) tmparea->contents |= AREACONTENTS_DONOTENTER;
-	if (node->contents & CONTENTS_WATER) tmparea->contents |= AREACONTENTS_WATER;
-	if (node->contents & CONTENTS_LAVA) tmparea->contents |= AREACONTENTS_LAVA;
-	if (node->contents & CONTENTS_SLIME) tmparea->contents |= AREACONTENTS_SLIME;
-	if (node->contents & CONTENTS_NOTTEAM1) tmparea->contents |= AREACONTENTS_NOTTEAM1;
-	if (node->contents & CONTENTS_NOTTEAM2) tmparea->contents |= AREACONTENTS_NOTTEAM2;
+	if (node->contents & AAS_CONTENTS_CLUSTERPORTAL) tmparea->contents |= AREACONTENTS_CLUSTERPORTAL;
+	if (node->contents & AAS_CONTENTS_MOVER) tmparea->contents |= AREACONTENTS_MOVER;
+	if (node->contents & AAS_CONTENTS_TELEPORTER) tmparea->contents |= AREACONTENTS_TELEPORTER;
+	if (node->contents & AAS_CONTENTS_JUMPPAD) tmparea->contents |= AREACONTENTS_JUMPPAD;
+	if (node->contents & AAS_CONTENTS_DONOTENTER) tmparea->contents |= AREACONTENTS_DONOTENTER;
+	if (node->contents & AAS_CONTENTS_WATER) tmparea->contents |= AREACONTENTS_WATER;
+	if (node->contents & AAS_CONTENTS_LAVA) tmparea->contents |= AREACONTENTS_LAVA;
+	if (node->contents & AAS_CONTENTS_SLIME) tmparea->contents |= AREACONTENTS_SLIME;
+	if (node->contents & AAS_CONTENTS_NOTTEAM1) tmparea->contents |= AREACONTENTS_NOTTEAM1;
+	if (node->contents & AAS_CONTENTS_NOTTEAM2) tmparea->contents |= AREACONTENTS_NOTTEAM2;
 
 	//store the bsp model that's inside this node
 	tmparea->modelnum = node->modelnum;
@@ -771,7 +771,7 @@ tmp_node_t *AAS_CreateAreas_r(node_t *node)
 		return tmpnode;
 	} //end if
 	//areas won't be created for solid leafs
-	if (node->contents & CONTENTS_SOLID)
+	if (node->contents & AAS_CONTENTS_SOLID)
 	{
 		//just return zero for a solid leaf (in tmp AAS NULL is a solid leaf)
 		return NULL;
