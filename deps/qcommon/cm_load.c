@@ -41,34 +41,11 @@ void SetPlaneSignbits (cplane_t *out) {
 }
 #endif //BSPC
 
-// to allow boxes to be treated as brush models, we allocate
-// some extra indexes along with those needed by the map
-#define	BOX_BRUSHES		1
-#define	BOX_SIDES		6
-#define	BOX_LEAFS		2
-#define	BOX_PLANES		12
-
 #define	LL(x) x=LittleLong(x)
-
-
-clipMap_t	cm;
-int			c_pointcontents;
-int			c_traces, c_brush_traces, c_patch_traces;
-
-
-byte		*cmod_base;
-
-#ifndef BSPC
-cvar_t		*cm_noAreas;
-cvar_t		*cm_noCurves;
-cvar_t		*cm_playerCurveClip;
-#endif
 
 cmodel_t	box_model;
 cplane_t	*box_planes;
 cbrush_t	*box_brush;
-
-
 
 void	CM_InitBoxHull (void);
 void	CM_FloodAreaConnections (void);

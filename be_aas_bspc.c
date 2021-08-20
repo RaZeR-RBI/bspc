@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#define BSPC
 
+extern int loadedmaptype;
 extern botlib_import_t botimport;
 extern	qboolean capsule_collision;
 
@@ -250,7 +251,18 @@ void AAS_CalcReachAndClusters(struct quakefile_s *qf)
 	//
 	if (!qf->pakfile[0]) strcpy(qf->pakfile, qf->filename);
 	//load the map
-	CM_LoadMap((char *) qf, qfalse, &aasworld.bspchecksum);
+	switch (loadedmaptype)
+	{
+		case 3:
+			CM_LoadMap((char *) qf, qfalse, &aasworld.bspchecksum);
+			break;
+		case 2:
+			CM_LoadMap_Q2((char *) qf, qfalse, &aasworld.bspchecksum);
+			break;
+		default:
+			Com_Error(ERR_DROP, "Unsupported map type");
+			return;
+	}
 	//get a handle to the world model
 	worldmodel = CM_InlineModel(0);		// 0 = world, 1 + are bmodels
 	//initialize bot import structure

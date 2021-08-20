@@ -21,7 +21,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "q_shared.h"
+#ifndef Q2_CM
 #include "qcommon.h"
+#else
+typedef struct {
+	char		shader[MAX_QPATH];
+	int			surfaceFlags;
+	int			contentFlags;
+} dshader_t;
+#endif
 #include "cm_polylib.h"
 
 #define	MAX_SUBMODELS			256
@@ -139,6 +147,14 @@ extern	int			c_traces, c_brush_traces, c_patch_traces;
 extern	cvar_t		*cm_noAreas;
 extern	cvar_t		*cm_noCurves;
 extern	cvar_t		*cm_playerCurveClip;
+extern	byte		*cmod_base;
+
+// to allow boxes to be treated as brush models, we allocate
+// some extra indexes along with those needed by the map
+#define	BOX_BRUSHES		1
+#define	BOX_SIDES		6
+#define	BOX_LEAFS		2
+#define	BOX_PLANES		12
 
 // cm_test.c
 

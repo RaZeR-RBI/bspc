@@ -534,7 +534,9 @@ int main (int argc, char **argv)
 					//create the AAS file
 					AAS_Create(filename);
 					//if it's a Quake3 map calculate the reachabilities and clusters
-					if (loadedmaptype == MAPTYPE_QUAKE3) AAS_CalcReachAndClusters(qf);
+					if (loadedmaptype == MAPTYPE_QUAKE3 || loadedmaptype == MAPTYPE_QUAKE2) {
+						AAS_CalcReachAndClusters(qf);
+					}
 					//
 					if (optimize) AAS_Optimize();
 					//
