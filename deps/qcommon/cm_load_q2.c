@@ -181,7 +181,7 @@ static void CMod_LoadBrushes( lump_t *l ) {
 		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
 			Com_Error( ERR_DROP, "CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum );
 		}
-		// TODO: Set brush contents using Q2_BrushContents
+		// TODO: Set brush contents using Q2_BrushContents?
 		out->contents = in->contents;
 
 		CM_BoundBrush( out );
@@ -213,7 +213,9 @@ static void CMod_LoadBrushSides (lump_t *l)
 		out->plane = &cm.planes[num];
 		out->shaderNum = LittleLong( in->texinfo );
 		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Com_Error( ERR_DROP, "CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum );
+			Log_Print("CMod_LoadBrushSides: brushside %i bad texInfo: %i\n", i, out->shaderNum);
+			out->surfaceFlags = 0;
+			continue;
 		}
 		out->surfaceFlags = cm.shaders[out->shaderNum].surfaceFlags;
 	}
@@ -388,7 +390,4 @@ void CM_LoadMap_Q2(const char *name, qboolean clientload, int *checksum) {
 	if ( !clientload ) {
 		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
 	}
-
-	// TODO
-	Com_Error(ERR_DROP, "Not implemented");
 }
