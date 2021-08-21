@@ -1,3 +1,8 @@
+# Fork information
+This fork adds support for Quake 2 maps reachability calculation.
+Botclip brushes can be specified by setting 'CONTENT_AUX' flag on them.
+Cluster portal brushes are not implemented (maybe just for now).
+
 # bspc
 
 This is the [Quake III: Arena](http://www.idsoftware.com/games/quake/quake3-arena/) BSP-to-AAS compiler.
