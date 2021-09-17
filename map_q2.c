@@ -84,11 +84,12 @@ int	Q2_BrushContents (mapbrush_t *b)
 
 	s = &b->original_sides[0];
 	// erase any incompatible flags
-	contents = s->contents & AAS_MASK_Q2;
-	trans = texinfo[s->texinfo].flags;
-	for (i = 1; i < b->numsides; i++, s++)
+	contents = b->contents & AAS_MASK_Q2;
+	trans = 0;
+	for (i = 0; i < b->numsides; i++, s++)
 	{
 		s = &b->original_sides[i];
+		if (s->texinfo <= TEXINFO_NODE) continue;
 		trans |= texinfo[s->texinfo].flags;
 		if ((s->contents & AAS_MASK_Q2) != contents)
 		{
@@ -109,11 +110,6 @@ int	Q2_BrushContents (mapbrush_t *b)
 		}
 	}
 
-	// use aux as botclip (since it's unused by original engine)
-	if (s->contents & CONTENTS_AUX)
-	{
-		contents = (AAS_CONTENTS_BOTCLIP | AAS_CONTENTS_SOLID);
-	}
 	return contents;
 }
 
@@ -778,6 +774,8 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 	int planenum;
 	dbrushside_t *bspbrushside;
 	dplane_t *bspplane;
+	qboolean botclip = false;
+	qboolean clusterprt = false;
 
 	if (nummapbrushes >= MAX_MAPFILE_BRUSHES)
 		Error ("nummapbrushes >= MAX_MAPFILE_BRUSHES");
@@ -820,10 +818,23 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 			side->contents |= CONTENTS_SOLID;
 
 		// hints and skips are never detail, and have no content
-		if (side->surf & (SURF_HINT|SURF_SKIP) )
+		if (side->surf & SURF_HINT && !(botclip || clusterprt))
 		{
 			side->contents = 0;
 			side->surf &= ~CONTENTS_DETAIL;
+		}
+		else if (side->surf & SURF_SKIP)
+		{
+			if (side->surf & SURF_TRANS33)
+			{
+				b->contents = CONTENTS_SOLID;
+				botclip = true;
+			}
+			else if (side->surf & SURF_TRANS66)
+			{
+				b->contents = 0;
+				clusterprt = true;
+			}
 		}
 
 		//ME: get a plane for this side
@@ -880,9 +891,31 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 		b->numsides++;
 	} //end for
 
+	if (botclip || clusterprt)
+	{
+		for (i = 0; i < b->numsides; i++)
+		{
+			s2 = &b->original_sides[i];
+			s2->texinfo = 0;
+			// mark side as textured to make it properly expand later
+			s2->flags = SFL_TEXTURED;
+		}
+	}
+
 	// get the content for the entire brush
-	b->contents = bspbrush->contents;
-	b->contents = Q2_BrushContents(b);
+	if (botclip)
+	{
+		b->contents = AAS_CONTENTS_BOTCLIP;
+	}
+	else if (clusterprt)
+	{
+		b->contents = AAS_CONTENTS_CLUSTERPORTAL;
+	}
+	else
+	{
+		b->contents = bspbrush->contents;
+		b->contents = Q2_BrushContents(b);
+	}
 
 	if (BrushExists(b))
 	{
@@ -1041,6 +1074,7 @@ qboolean Q2_ParseBSPEntity(int entnum)
 	} //end if
 	return true;
 } //end of the function Q2_ParseBSPEntity
+
 //===========================================================================
 //
 // Parameter:				-

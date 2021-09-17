@@ -213,7 +213,7 @@ static void CMod_LoadBrushSides (lump_t *l)
 		out->plane = &cm.planes[num];
 		out->shaderNum = LittleLong( in->texinfo );
 		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Log_Print("CMod_LoadBrushSides: brushside %i bad texInfo: %i\n", i, out->shaderNum);
+			// Log_Print("CMod_LoadBrushSides: brushside %i bad texInfo: %i\n", i, out->shaderNum);
 			out->surfaceFlags = 0;
 			continue;
 		}

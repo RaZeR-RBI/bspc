@@ -1,7 +1,13 @@
 # Fork information
-This fork adds support for Quake 2 maps reachability calculation.
-Botclip brushes can be specified by setting 'CONTENT_AUX' flag on them.
-Cluster portal brushes are not implemented (maybe just for now).
+This fork adds support for **Quake 2** maps reachability calculation.
+
+Bot clips and cluster portal brushes are supported. To make them set the following surface flags:
+- **trans33** + **skip** flags = ***bot clip brush***
+- **trans66** + **skip** flags = ***cluster portal brush***
+
+The **skip** flag is needed here to make it non-blocking and invisible, **trans33/66** flags are used to distinguish between those two brush types.
+
+---
 
 # bspc
 
