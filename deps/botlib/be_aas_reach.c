@@ -48,6 +48,8 @@ extern int Sys_MilliSeconds(void);
 
 extern botlib_import_t botimport;
 
+extern qboolean onlystatic;
+
 //#define REACH_DEBUG
 
 //NOTE: all travel times are in hundreth of a second
@@ -4452,15 +4454,18 @@ int AAS_ContinueInitReachability(float time)
 			} //end if
 			AAS_Reachability_WalkOffLedge(i);
 		} //end for
-		//create jump pad reachabilities
-		AAS_Reachability_JumpPad();
-		//create teleporter reachabilities
-		AAS_Reachability_Teleport();
-		//create elevator (func_plat) reachabilities
-		AAS_Reachability_Elevator();
-		//create func_bobbing reachabilities
-		AAS_Reachability_FuncBobbing();
-		//
+		if (!onlystatic)
+		{
+			//create jump pad reachabilities
+			AAS_Reachability_JumpPad();
+			//create teleporter reachabilities
+			AAS_Reachability_Teleport();
+			//create elevator (func_plat) reachabilities
+			AAS_Reachability_Elevator();
+			//create func_bobbing reachabilities
+			AAS_Reachability_FuncBobbing();
+			//
+		}
 #ifdef DEBUG
 		botimport.Print(PRT_MESSAGE, "%6d reach swim\n", reach_swim);
 		botimport.Print(PRT_MESSAGE, "%6d reach equal floor\n", reach_equalfloor);

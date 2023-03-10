@@ -48,6 +48,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define BBOX_NORMAL_EPSILON			0.0001
 
+extern qboolean onlystatic;
+
 //===========================================================================
 //
 // Parameter:			-
@@ -502,6 +504,10 @@ int AAS_ValidEntity(entity_t *mapent)
 	{
 		return true;
 	} //end if
+	if (onlystatic) // only worldspawn brushes requested
+	{
+		return false;
+	}
 	//some of the func_wall brushes are also used for AAS
 	else if (!strcmp("func_wall", ValueForKey(mapent, "classname")))
 	{
