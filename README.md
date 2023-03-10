@@ -7,6 +7,8 @@ Bot clips and cluster portal brushes are supported. To make them set the followi
 
 The **skip** flag is needed here to make it non-blocking and invisible, **trans33/66** flags are used to distinguish between those two brush types.
 
+Also this fork adds '-forcedportals' option to '-bsp2aas' mode, which disables automatic cluster portal creation - only forced (defined by cluster portal brushes) portals will be used.
+
 ---
 
 # bspc

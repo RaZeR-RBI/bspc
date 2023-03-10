@@ -77,6 +77,7 @@ qboolean	cancelconversion;	//true if the conversion is being cancelled
 qboolean	noliquids;			//no liquids when writing map file
 qboolean	forcesidesvisible;	//force all brush sides to be visible when loaded from bsp
 qboolean	capsule_collision = 0;
+qboolean	forcedportals; // aas: don't guess portals, use only clusterportal brushes
 
 //===========================================================================
 //
@@ -306,7 +307,13 @@ int main (int argc, char **argv)
 		{
 			Log_Print("optimize = true\n");
 			optimize = true;
-		} //end else if
+		}
+		else if (!stricmp(argv[i], "-forcedportals"))
+		{
+			Log_Print("forcedportals = true\n");
+			forcedportals = true;
+		}
+		//end else if
 		/*
 		else if (!stricmp(argv[i],"-glview"))
 		{
@@ -731,6 +738,7 @@ int main (int argc, char **argv)
 			"   nocsg                                = disables brush chopping\n"
 			"   forcesidesvisible                    = force all sides to be visible\n"
 			"   grapplereach                         = calculate grapple reachabilities\n"
+			"   forcedportals                        = use only clusterportal brushes as portals\n"
 
 /*			"   glview     = output a GL view\n"
 			"   draw       = enables drawing\n"

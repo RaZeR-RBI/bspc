@@ -3,7 +3,7 @@ CFLAGS=\
 	-Dstricmp=strcasecmp -DCom_Memcpy=memcpy -DCom_Memset=memset \
 	-DMAC_STATIC= -DQDECL= -DLINUX -DBSPC -D_FORTIFY_SOURCE=2 \
 	-fno-common \
-	-I. -Ideps -Wall
+	-I. -Ideps -Wall -g
 
 RELEASE_CFLAGS=-O3 -ffast-math
 DEBUG_CFLAGS=-g -O0 -ffast-math
@@ -39,7 +39,9 @@ GAME_OBJS = \
 	deps/botlib/be_aas_sample.o\
 	brushbsp.o\
 	bspc.o\
+	deps/qcommon/cm_common.o\
 	deps/qcommon/cm_load.o\
+	deps/qcommon/cm_load_q2.o\
 	deps/qcommon/cm_patch.o\
 	deps/qcommon/cm_test.o\
 	deps/qcommon/cm_trace.o\
@@ -91,7 +93,7 @@ release: $(EXEC)
 
 $(EXEC): $(GAME_OBJS)
 	$(CC) -o $@ $(GAME_OBJS) $(LDFLAGS)
-	strip $@
+	# strip $@
 
 $(EXEC)_g: $(GAME_OBJS)
 	$(CC) -o $@ $(GAME_OBJS) $(LDFLAGS)

@@ -55,6 +55,8 @@ extern botlib_import_t botimport;
 // do not flood through area faces, only use reachabilities
 int nofaceflood = qtrue;
 
+extern qboolean forcedportals;
+
 //===========================================================================
 //
 // Parameter:				-
@@ -806,6 +808,8 @@ int AAS_CheckAreaForPossiblePortals(int areanum)
 
 	//if it isn't already a portal
 	if (aasworld.areasettings[areanum].contents & AREACONTENTS_CLUSTERPORTAL) return 0;
+	// if auto portal detection is disabled, return
+	if (forcedportals) return 0;
 	//it must be a grounded area
 	if (!(aasworld.areasettings[areanum].areaflags & AREA_GROUNDED)) return 0;
 	//
