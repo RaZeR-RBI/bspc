@@ -1117,7 +1117,7 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 			{
 				//face plane must be more or less horizontal
 				plane = &aasworld.planes[groundface1->planenum ^ (!faceside1)];
-				if (DotProduct(plane->normal, invgravity) < 0.7) continue;
+				if (DotProduct(plane->normal, invgravity) < aassettings.phys_maxsteepness) continue;
 			} //end if
 			else
 			{
@@ -2228,7 +2228,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		{
 			plane = &aasworld.planes[trace.planenum];
 			// if the bot can stand on the surface
-			if (DotProduct(plane->normal, up) >= 0.7)
+			if (DotProduct(plane->normal, up) >= aassettings.phys_maxsteepness)
 			{
 				// if no lava or slime below
 				if (!(AAS_PointContents(trace.endpos) & (CONTENTS_LAVA|CONTENTS_SLIME)))
@@ -2251,7 +2251,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 		{
 			plane = &aasworld.planes[trace.planenum];
 			// if the bot can stand on the surface
-			if (DotProduct(plane->normal, up) >= 0.7)
+			if (DotProduct(plane->normal, up) >= aassettings.phys_maxsteepness)
 			{
 				// if no lava or slime below
 				if (!(AAS_PointContents(trace.endpos) & (CONTENTS_LAVA|CONTENTS_SLIME)))
@@ -2482,9 +2482,9 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 		//if both vertical ladder faces
 		if (ladderface1vertical && ladderface2vertical
 					//and the ladder faces do not make a sharp corner
-					&& DotProduct(plane1->normal, plane2->normal) > 0.7f
+					&& DotProduct(plane1->normal, plane2->normal) > aassettings.phys_maxsteepness
 					//and the shared edge is not too vertical
-					&& fabs(DotProduct(sharededgevec, up)) < 0.7f)
+					&& fabs(DotProduct(sharededgevec, up)) < aassettings.phys_maxsteepness)
 		{
 			//create a new reachability link
 			lreach = AAS_AllocReachability();
