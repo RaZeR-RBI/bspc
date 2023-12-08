@@ -101,6 +101,9 @@ typedef enum {qfalse, qtrue}	qboolean;
 
 #define DEFINEHASHING			1
 
+// fix buffer overflow
+#define MAX_PATH 1024
+
 //directive name with parse function
 typedef struct directive_s
 {
