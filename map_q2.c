@@ -814,7 +814,7 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 		if (fulldetail)
 			side->contents &= ~CONTENTS_DETAIL;
 		if (!(side->contents & ((LAST_VISIBLE_CONTENTS-1) 
-			| CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP|CONTENTS_MIST)  ) )
+			| CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP|CONTENTS_MIST|CONTENTS_NAVSPLIT)  ) )
 			side->contents |= CONTENTS_SOLID;
 
 		// hints and skips are never detail, and have no content

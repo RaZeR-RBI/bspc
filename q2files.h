@@ -246,8 +246,8 @@ typedef struct miptex_s
 #define	MAX_MAP_PORTALS		65536
 #define	MAX_MAP_EDGES		128000
 #define	MAX_MAP_SURFEDGES	256000
-#define	MAX_MAP_LIGHTING	0x320000
-#define	MAX_MAP_VISIBILITY	0x280000
+#define	MAX_MAP_LIGHTING	0x3200000 // increased from 0x320000
+#define	MAX_MAP_VISIBILITY	0x2800000 // increased from 0x280000
 
 // key / value pair sizes
 
@@ -342,6 +342,7 @@ typedef struct
 #define	LAST_VISIBLE_CONTENTS	64
 
 // remaining contents are non-visible, and don't eat brushes
+#define CONTENTS_NAVSPLIT 0x2000 // RaZeR-RBI: Extension for area splitting control
 
 #define	CONTENTS_AREAPORTAL		0x8000
 

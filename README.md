@@ -7,6 +7,8 @@ Bot clips and cluster portal brushes are supported. To make them set the followi
 
 The **skip** flag is needed here to make it non-blocking and invisible, **trans33/66** flags are used to distinguish between those two brush types.
 
+To split big areas into smaller ones an additional content flag is supported (`CONTENTS_NAVSPLIT = 0x2000 // 1 << 13`), which should be set along with CONTENTS_AUX (without that flag it will eat solid brushes wrongly marking solid areas as reachable). The resulting brush will create additional areas inside it by adding an additional area content flag which doesn't alter reachability calculations.
+
 Also this fork adds additional options to '-bsp2aas' mode:
 
 - **-forcedportals** - disables automatic cluster portal creation - only forced (defined by cluster portal brushes) portals will be used

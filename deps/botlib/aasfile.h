@@ -83,6 +83,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define AREACONTENTS_MOVER				1024
 #define AREACONTENTS_NOTTEAM1			2048
 #define AREACONTENTS_NOTTEAM2			4096
+#define	AREACONTENTS_SPLITTER			8192 // RaZeR-RBI: Extension for area splitting control
 //number of model of the mover inside this area
 #define AREACONTENTS_MODELNUMSHIFT		24
 #define AREACONTENTS_MAXMODELNUM		0xFF

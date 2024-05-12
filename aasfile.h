@@ -74,6 +74,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define AREACONTENTS_JUMPPAD			128
 #define AREACONTENTS_DONOTENTER			256
 #define	AREACONTENTS_VIEWPORTAL			512
+#define	AREACONTENTS_SPLITTER			8192 // RaZeR-RBI: Extension for area splitting control
 
 //area flags
 #define AREA_GROUNDED				1		//bot can stand on the ground

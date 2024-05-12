@@ -169,7 +169,8 @@ void AAS_SetTexinfo(mapbrush_t *brush)
 									| AAS_CONTENTS_LAVA
 									| AAS_CONTENTS_SLIME
 									| AAS_CONTENTS_WINDOW
-									| AAS_CONTENTS_PLAYERCLIP))
+									| AAS_CONTENTS_PLAYERCLIP
+									| AAS_CONTENTS_NAVSPLIT))
 	{
 		//we just set texinfo to 0 because these brush sides MUST be used as
 		//bsp splitters textured or not textured
@@ -781,6 +782,7 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 									| AAS_CONTENTS_LAVA
 									| AAS_CONTENTS_SLIME
 									| AAS_CONTENTS_MOVER
+									| AAS_CONTENTS_NAVSPLIT
 									)))
 	{
 		nummapbrushsides -= brush->numsides;
@@ -824,7 +826,7 @@ void AAS_CreateMapBrushes(mapbrush_t *brush, entity_t *mapent, int addbevels)
 		AAS_MakeBrushWindings(brush);
 	} //end if
 	//area portal brushes are NOT expanded
-	else if (brush->contents & AAS_CONTENTS_CLUSTERPORTAL)
+	else if (brush->contents & (AAS_CONTENTS_CLUSTERPORTAL | AAS_CONTENTS_NAVSPLIT))
 	{
 		brush->expansionbbox = 0;
 		//NOTE: the first bounding box is the max

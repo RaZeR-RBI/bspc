@@ -734,6 +734,7 @@ tmp_node_t *AAS_CreateArea(node_t *node)
 	if (node->contents & AAS_CONTENTS_SLIME) tmparea->contents |= AREACONTENTS_SLIME;
 	if (node->contents & AAS_CONTENTS_NOTTEAM1) tmparea->contents |= AREACONTENTS_NOTTEAM1;
 	if (node->contents & AAS_CONTENTS_NOTTEAM2) tmparea->contents |= AREACONTENTS_NOTTEAM2;
+	if (node->contents & AAS_CONTENTS_NAVSPLIT) tmparea->contents |= AREACONTENTS_SPLITTER;
 
 	//store the bsp model that's inside this node
 	tmparea->modelnum = node->modelnum;
