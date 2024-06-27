@@ -1,13 +1,12 @@
 # Fork information
 This fork adds support for **Quake 2** maps reachability calculation.
 
-Bot clips and cluster portal brushes are supported. To make them set the following surface flags:
-- **trans33** + **skip** flags = ***bot clip brush***
-- **trans66** + **skip** flags = ***cluster portal brush***
-
-The **skip** flag is needed here to make it non-blocking and invisible, **trans33/66** flags are used to distinguish between those two brush types.
-
-To split big areas into smaller ones an additional content flag is supported (`CONTENTS_NAVSPLIT = 0x2000 // 1 << 13`), which should be set along with CONTENTS_AUX (without that flag it will eat solid brushes wrongly marking solid areas as reachable). The resulting brush will create additional areas inside it by adding an additional area content flag which doesn't alter reachability calculations.
+Botclip, cluster portal and 'do not enter' brushes are supported, along with a new brush type 'navsplit', which can be used to split large AAS areas into multiple parts.
+To use these brushes you need to use the following **surface flags** in addition to **skip** flag (to make them invisible and non-solid):
+- **0x1000** makes a **botclip brush** (marks area inside brush as unreachable by bot)
+- **0x2000** makes a **cluster portal brush** (divides map into clusters, recommended to place in doorways)
+- **0x4000** makes a **navsplit brush**, which essentially adds another content flag which doesn't change anything except how AAS BSP splits
+- **0x8000** makes a **'do not enter' brush** which marks an area for bot to avoid unless necessary
 
 Also this fork adds additional options to '-bsp2aas' mode:
 

@@ -341,9 +341,9 @@ typedef struct
 #define	CONTENTS_MIST			64
 #define	LAST_VISIBLE_CONTENTS	64
 
-// remaining contents are non-visible, and don't eat brushes
-#define CONTENTS_NAVSPLIT 0x2000 // RaZeR-RBI: Extension for area splitting control
+#define MASK_CONTENTS_LIQUID (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)
 
+// remaining contents are non-visible, and don't eat brushes
 #define	CONTENTS_AREAPORTAL		0x8000
 
 #define	CONTENTS_PLAYERCLIP		0x10000
@@ -382,6 +382,12 @@ typedef struct
 #define	SURF_HINT		0x100	// make a primary bsp splitter
 #define	SURF_SKIP		0x200	// completely ignore, allowing non-closed brushes
 
+// RaZeR-RBI: Extension for Q2
+#define SURF_BOTCLIP		0x1000
+#define SURF_CLUSTERPORTAL	0x2000
+#define SURF_NAVSPLIT		0x4000
+#define SURF_DONOTENTER		0x8000
+#define MASK_SURF_SPECIAL (SURF_BOTCLIP|SURF_CLUSTERPORTAL|SURF_NAVSPLIT|SURF_DONOTENTER)
 
 
 typedef struct

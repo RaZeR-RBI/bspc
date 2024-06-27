@@ -72,6 +72,53 @@ void Q2_CreateMapTexinfo(void)
 
 /*
 ===========
+Q2_GetBrushSurfFlags
+===========
+*/
+int Q2_GetBrushSurfFlags(mapbrush_t *b)
+{
+	side_t		*s;
+	int			i;
+	int result = 0;
+
+	s = &b->original_sides[0];
+	for (i = 0; i < b->numsides; i++, s++)
+	{
+		s = &b->original_sides[i];
+		result |= s->surf;
+	}
+	return result;
+}
+
+/*
+===========
+Q2_SpecialBrushContents
+===========
+*/
+int Q2_SpecialBrushContents(mapbrush_t *b)
+{
+	int contents = Q2_GetBrushSurfFlags(b) | (b->contents & AAS_MASK_Q2);
+	if (contents & SURF_BOTCLIP)
+	{
+		return AAS_CONTENTS_BOTCLIP;
+	}
+	if (contents & SURF_CLUSTERPORTAL)
+	{
+		return AAS_CONTENTS_CLUSTERPORTAL;
+	}
+	if (contents & SURF_NAVSPLIT)
+	{
+		return (contents & (~CONTENTS_SOLID)) | AAS_CONTENTS_NAVSPLIT;
+	}
+	if (contents & SURF_DONOTENTER)
+	{
+		return (contents & MASK_CONTENTS_LIQUID) | AAS_CONTENTS_DONOTENTER;
+	}
+	return 0;
+}
+
+/*
+===========
 Q2_BrushContents
 ===========
 */
@@ -210,6 +257,7 @@ void Q2_ParseBrush (script_t *script, entity_t *mapent)
 	brush_texture_t td;
 	int planepts[3][3];
 	token_t token;
+	int special;
 
 	if (nummapbrushes >= MAX_MAPFILE_BRUSHES)
 		Error ("nummapbrushes == MAX_MAPFILE_BRUSHES");
@@ -219,6 +267,7 @@ void Q2_ParseBrush (script_t *script, entity_t *mapent)
 	b->entitynum = num_entities-1;
 	b->brushnum = nummapbrushes - mapent->firstbrush;
 	b->leafnum = -1;
+	special = false;
 
 	do
 	{
@@ -279,6 +328,11 @@ void Q2_ParseBrush (script_t *script, entity_t *mapent)
 			td.value = token.intvalue;
 		}
 
+		if (side->surf & MASK_SURF_SPECIAL)
+		{
+			special = true;
+		}
+
 		// translucent objects are automatically classified as detail
 		if (side->surf & (SURF_TRANS33|SURF_TRANS66) )
 			side->contents |= CONTENTS_DETAIL;
@@ -291,7 +345,7 @@ void Q2_ParseBrush (script_t *script, entity_t *mapent)
 			side->contents |= CONTENTS_SOLID;
 
 		// hints and skips are never detail, and have no content
-		if (side->surf & (SURF_HINT|SURF_SKIP) )
+		if (side->surf & (SURF_HINT|SURF_SKIP) && !special)
 		{
 			side->contents = 0;
 			side->surf &= ~CONTENTS_DETAIL;
@@ -352,7 +406,21 @@ void Q2_ParseBrush (script_t *script, entity_t *mapent)
 	} while (1);
 
 	// get the content for the entire brush
-	b->contents = Q2_BrushContents (b);
+	if (!special)
+		b->contents = Q2_BrushContents (b);
+	else
+		b->contents = Q2_SpecialBrushContents(b);
+
+	if (special)
+	{
+		for (i = 0; i < b->numsides; i++)
+		{
+			s2 = &b->original_sides[i];
+			s2->texinfo = 0;
+			// mark side as textured to make it properly expand later
+			s2->flags = SFL_TEXTURED;
+		}
+	}
 
 #ifdef ME
 	if (BrushExists(b))
@@ -774,8 +842,7 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 	int planenum;
 	dbrushside_t *bspbrushside;
 	dplane_t *bspplane;
-	qboolean botclip = false;
-	qboolean clusterprt = false;
+	qboolean special;
 
 	if (nummapbrushes >= MAX_MAPFILE_BRUSHES)
 		Error ("nummapbrushes >= MAX_MAPFILE_BRUSHES");
@@ -785,6 +852,7 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 	b->entitynum = mapent-entities;
 	b->brushnum = nummapbrushes - mapent->firstbrush;
 	b->leafnum = dbrushleafnums[bspbrush - dbrushes];
+	special = false;
 
 	for (n = 0; n < bspbrush->numsides; n++)
 	{
@@ -806,6 +874,11 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 		if (bspbrushside->texinfo < 0) side->surf = 0;
 		else side->surf = texinfo[bspbrushside->texinfo].flags;
 
+		if (side->surf & MASK_SURF_SPECIAL)
+		{
+			special = true;
+		}
+
 		// translucent objects are automatically classified as detail
 		if (side->surf & (SURF_TRANS33|SURF_TRANS66) )
 			side->contents |= CONTENTS_DETAIL;
@@ -813,28 +886,15 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 			side->contents |= CONTENTS_DETAIL;
 		if (fulldetail)
 			side->contents &= ~CONTENTS_DETAIL;
-		if (!(side->contents & ((LAST_VISIBLE_CONTENTS-1) 
-			| CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP|CONTENTS_MIST|CONTENTS_NAVSPLIT)  ) )
+		if (!(side->contents & ((LAST_VISIBLE_CONTENTS-1)
+			| CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP|CONTENTS_MIST)  ) && !special)
 			side->contents |= CONTENTS_SOLID;
 
 		// hints and skips are never detail, and have no content
-		if (side->surf & SURF_HINT && !(botclip || clusterprt))
+		if (side->surf & SURF_HINT && !special)
 		{
 			side->contents = 0;
 			side->surf &= ~CONTENTS_DETAIL;
-		}
-		else if (side->surf & SURF_SKIP)
-		{
-			if (side->surf & SURF_TRANS33)
-			{
-				b->contents = CONTENTS_SOLID;
-				botclip = true;
-			}
-			else if (side->surf & SURF_TRANS66)
-			{
-				b->contents = 0;
-				clusterprt = true;
-			}
 		}
 
 		//ME: get a plane for this side
@@ -891,7 +951,14 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 		b->numsides++;
 	} //end for
 
-	if (botclip || clusterprt)
+	// get the content for the entire brush
+	b->contents = bspbrush->contents;
+	if (!special)
+		b->contents = Q2_BrushContents(b);
+	else
+		b->contents = Q2_SpecialBrushContents(b);
+
+	if (special)
 	{
 		for (i = 0; i < b->numsides; i++)
 		{
@@ -902,20 +969,6 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 		}
 	}
 
-	// get the content for the entire brush
-	if (botclip)
-	{
-		b->contents = AAS_CONTENTS_BOTCLIP;
-	}
-	else if (clusterprt)
-	{
-		b->contents = AAS_CONTENTS_CLUSTERPORTAL;
-	}
-	else
-	{
-		b->contents = bspbrush->contents;
-		b->contents = Q2_BrushContents(b);
-	}
 
 	if (BrushExists(b))
 	{
