@@ -8,6 +8,8 @@ To use these brushes you need to use the following **surface flags** in addition
 - **0x4000** makes a **navsplit brush**, which essentially adds another content flag which doesn't change anything except how AAS BSP splits
 - **0x8000** makes a **'do not enter' brush** which marks an area for bot to avoid unless necessary
 
+If those brushes will be used alongside areaportals (especially intersecting them), Q2 map compilers may throw up and generate areaportal leaks - for this reason, a special brush entity **func_navgroup** was added - it acts similar to *func_group*, but only on AAS generation stage - brushes inside **func_navgroup** are moved to worldspawn entity.
+
 Also this fork adds additional options to '-bsp2aas' mode:
 
 - **-forcedportals** - disables automatic cluster portal creation - only forced (defined by cluster portal brushes) portals will be used

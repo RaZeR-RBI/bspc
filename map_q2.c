@@ -844,6 +844,10 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 	dplane_t *bspplane;
 	qboolean special;
 
+	// RaZeR-RBI: extension for making specific brushes available only for AAS generation
+	// (to resolve content conflicts and leaks with areaportals, etc)
+	int movetoworldspawn = !strcmp("func_navgroup", ValueForKey(mapent, "classname"));
+
 	if (nummapbrushes >= MAX_MAPFILE_BRUSHES)
 		Error ("nummapbrushes >= MAX_MAPFILE_BRUSHES");
 
@@ -981,7 +985,7 @@ void Q2_BSPBrushToMapBrush(dbrush_t *bspbrush, entity_t *mapent)
 	if (create_aas)
 	{
 		//create the AAS brushes from this brush, don't add brush bevels
-		AAS_CreateMapBrushes(b, mapent, false);
+		AAS_CreateMapBrushes(b, movetoworldspawn ? &entities[0] : mapent, false);
 		return;
 	} //end if
 
